@@ -1,8 +1,8 @@
 'use strict';
 
 {
-  const year=2020;
-  const month=8;
+  let year=2020;
+  let month=8;
 
   // 前月の日付を取得し無効化
 
@@ -54,6 +54,15 @@
   }
 
   const createCalendar=()=>{
+    const tbody=document.querySelector('tbody');
+
+    while(tbody.firstChild) {
+      tbody.removeChild(tbody.firstChild);
+    }
+
+    const title=`${year}/${String(month+1).padStart(2,'0')}`;
+    document.getElementById('title').textContent=title;
+
     const dates=[
       ...getCalendarHead(),
       ...getCalendarBody(),
@@ -66,5 +75,43 @@
     for(let i=0; i<weeksCount; i++){
       weeks.push(dates.splice(0,7));
     }
+
+    weeks.forEach((week)=>{
+      const tr=document.createElement('tr');
+
+      week.forEach((date)=>{
+        const td=document.createElement('td');
+        td.textContent=date.date;
+
+        if(date.isToday){
+          td.classList.add('today');
+        }
+        if(date.isDisabled){
+          td.classList.add('disabled');
+        }
+        tr.appendChild(td);
+      });
+      document.querySelector('tbody').appendChild(tr);
+    });
   }
+
+  document.getElementById('prev').addEventListener('click',()=>{
+    month--;
+    if(month<0){
+      year--;
+      month=11;
+    }
+    createCalendar();
+  });
+
+  document.getElementById('next').addEventListener('click',()=>{
+    month++;
+    if(month>11){
+      year++;
+      month=0;
+    }
+    createCalendar();
+  });
+
+  createCalendar();
 }
